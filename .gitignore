@@ -13,3 +13,4 @@ Exports
 *.suo
 *.xcodeproj
 *.xcworkspace
+*.DS_Store

@@ -19,7 +19,14 @@ void UOSCEmitterComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	if(GetOSCHost())
+	{
+		OSCHost = GetOSCHost();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("OSCHost not found"));
+	}
 	
 }
 
@@ -46,13 +53,27 @@ AOSCHost* UOSCEmitterComponent::GetOSCHost()
 	return OSCHost;
 }
 
-void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, float Duration)
+void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
 {
-	//
+	int8 pitch = static_cast<int8>(NoteToPlay);
+	FString address = "/midi";
+	OSCHost->SendOSCMidiValue(pitch, Velocity, address);
+	NoteToStop = NoteToPlay;
+	FTimerHandle timerHandle;
+	 GetWorld()->GetTimerManager().SetTimer
+	 (timerHandle, 
+	 this, 
+	 &UOSCEmitterComponent::StopMidiEvent, 
+	 Duration, 
+	 false, 
+	 -1);
+
 }
 
-void UOSCEmitterComponent::StopMidiEvent(EMidiNote NoteToStop)
+void UOSCEmitterComponent::StopMidiEvent()
 {
-	//
+	int8 pitch = static_cast<int8>(NoteToStop);
+	FString address = "/midi";
+	OSCHost->SendOSCMidiValue(pitch, 0, address);
 }
 

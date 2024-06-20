@@ -28,13 +28,14 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void PlayMidiEvent(EMidiNote NoteToPlay, float Duration);
+	void PlayMidiEvent(EMidiNote NoteToPlay,int Velocity, float Duration);
 
 	UFUNCTION(BlueprintCallable)
-	void StopMidiEvent(EMidiNote NoteToStop);
+	void StopMidiEvent();
 
 
 private:
 	AOSCHost* GetOSCHost();
 	AOSCHost* OSCHost = nullptr;
+	EMidiNote NoteToStop;
 };

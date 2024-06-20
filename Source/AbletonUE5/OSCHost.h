@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "OSCClient.h"
 #include "OSCManager.h"
-#include "AbletonUE5Enums.h"
 #include "OSCHost.generated.h"
 
 UCLASS()
@@ -20,15 +19,15 @@ public:
 
 	/** Send a float value from the OSC Client */
 	UFUNCTION(BlueprintCallable)
-	void SendOSCFloat(double FloatToSend, FString Address, double SendFloat);
+	void SendOSCFloat(double FloatToSend, FString Address);
 
 	/** Send a MIDI value from the OSC Client*/
 	UFUNCTION(BlueprintCallable, Category="Default")
-	void SendOSCMidiValue(int32 Pitch, int32 Velocity, double SendFloat);
+	void SendOSCMidiValue(int32 Pitch, int32 Velocity, FString Address);
 
 	/** Send an Integer value from the OSC Client */
 	UFUNCTION(BlueprintCallable, Category="Default")
-	void SendOSCInt(int32 IntToSend, FString Address, int32 SendInt);
+	void SendOSCInt(int32 IntToSend, FString Address);
 
 
 protected:
@@ -43,6 +42,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
 
 };
 

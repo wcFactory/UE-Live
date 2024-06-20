@@ -7,7 +7,11 @@
 AOSCHost::AOSCHost()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	FString localHost = "127.0.0.1";
+	FString clientName = "AbletonOSCClient";
+	OSCClient = UOSCManager::CreateOSCClient(localHost, 1312, clientName, nullptr);
 
 }
 
@@ -15,9 +19,7 @@ AOSCHost::AOSCHost()
 void AOSCHost::BeginPlay()
 {
 	Super::BeginPlay();
-	FString localHost = "127.0.0.1";
-	FString clientName = "AbletonOSCClient";
-	OSCClient = UOSCManager::CreateOSCClient(localHost, 1312, clientName, nullptr);
+	
 	
 }
 
@@ -29,17 +31,31 @@ void AOSCHost::Tick(float DeltaTime)
 }
 
 
-void AOSCHost::SendOSCInt(int IntToSend, FString Address, int SendInt)
+void AOSCHost::SendOSCInt(int IntToSend, FString Address)
 {
-    // Your implementation here
+    FOSCMessage message;
+	FOSCAddress address = UOSCManager::ConvertStringToOSCAddress(Address);
+	message.SetAddress(address);
+	UOSCManager::AddInt32(message, IntToSend);
+	OSCClient->SendOSCMessage(message);
 }
 
-void AOSCHost::SendOSCFloat(double FloatToSend, FString Address, double SendFloat)
+void AOSCHost::SendOSCFloat(double FloatToSend, FString Address)
 {
-    // Your implementation here
+    FOSCMessage message;
+	FOSCAddress address = UOSCManager::ConvertStringToOSCAddress(Address);
+	message.SetAddress(address);
+	UOSCManager::AddFloat(message, FloatToSend);
+	OSCClient->SendOSCMessage(message);
+    
 }
 
-void AOSCHost::SendOSCMidiValue(int MidiValue, int MidiChannel, double MidiVelocity)
+void AOSCHost::SendOSCMidiValue(int32 Pitch, int32 Velocity, FString Address)
 {
-    // Your implementation here
+ 	FOSCMessage message;
+	FOSCAddress address = UOSCManager::ConvertStringToOSCAddress(Address);
+	message.SetAddress(address);
+	UOSCManager::AddInt32(message, Pitch);
+	UOSCManager::AddInt32(message, Velocity);
+	OSCClient->SendOSCMessage(message);   
 }

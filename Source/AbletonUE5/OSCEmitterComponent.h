@@ -9,6 +9,8 @@
 #include "AbletonUE5Enums.h"
 #include "OSCEmitterComponent.generated.h"
 
+//Forward declarations
+class APlayerController;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ABLETONUE5_API UOSCEmitterComponent : public USceneComponent
@@ -33,9 +35,26 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopMidiEvent();
 
+	UFUNCTION(BlueprintCallable)
+	void SetSpatialData();
+
+	
+
+	
+
 
 private:
+
+	//OSC Host
 	AOSCHost* GetOSCHost();
 	AOSCHost* OSCHost = nullptr;
-	EMidiNote NoteToStop;
+
+	//Playback
+	EMidiNote CurrentNote;
+
+	//Spatial Audio
+	void InitialisePlayerController();
+	APlayerController* PlayerController = nullptr;
+
+
 };

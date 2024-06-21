@@ -2,6 +2,7 @@
 
 
 #include "OSCEmitterComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UOSCEmitterComponent::UOSCEmitterComponent()
@@ -27,6 +28,8 @@ void UOSCEmitterComponent::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("OSCHost not found"));
 	}
+
+	InitialisePlayerController();
 	
 }
 
@@ -37,6 +40,7 @@ void UOSCEmitterComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	SetSpatialData();
 }
 
 AOSCHost* UOSCEmitterComponent::GetOSCHost()
@@ -57,23 +61,47 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 {
 	int8 pitch = static_cast<int8>(NoteToPlay);
 	FString address = "/midi";
-	OSCHost->SendOSCMidiValue(pitch, Velocity, address);
-	NoteToStop = NoteToPlay;
+	if(OSCHost){OSCHost->SendOSCMidiValue(pitch, Velocity, address);}
+	CurrentNote = NoteToPlay;
 	FTimerHandle timerHandle;
-	 GetWorld()->GetTimerManager().SetTimer
-	 (timerHandle, 
-	 this, 
-	 &UOSCEmitterComponent::StopMidiEvent, 
-	 Duration, 
-	 false, 
-	 -1);
+	 GetWorld()->GetTimerManager().SetTimer(
+		timerHandle, 
+	 	this, 
+		&UOSCEmitterComponent::StopMidiEvent, 
+	 	Duration, 
+	 	false, 
+	 	-1);
 
 }
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	int8 pitch = static_cast<int8>(NoteToStop);
+	int8 pitch = static_cast<int8>(CurrentNote);
 	FString address = "/midi";
-	OSCHost->SendOSCMidiValue(pitch, 0, address);
+	if(OSCHost){OSCHost->SendOSCMidiValue(pitch, 0, address);}
 }
 
+void UOSCEmitterComponent::InitialisePlayerController()
+{
+	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+}
+
+void UOSCEmitterComponent::SetSpatialData()
+{
+	if(PlayerController != nullptr){
+		
+		FVector listenerPosition;
+		FVector listenerFrontDir;
+		FVector listenerRightDir;
+	
+		PlayerController->GetAudioListenerPosition(listenerPosition, listenerFrontDir, listenerRightDir);
+		
+		UE_LOG(LogTemp, Display, TEXT("Rotation Front: %s, Rotation Right %s"),
+		*listenerFrontDir.ToString(), *listenerRightDir.ToString());
+
+	
+		
+	} 
+	
+	
+}

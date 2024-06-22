@@ -113,6 +113,7 @@ UOSCAddressObject* AOSCHost::GetAddressFromPool(UOSCEmitterComponent* inEmitter)
 
 void AOSCHost::ReleaseAddress(UOSCAddressObject* channel)
 {
+	if(channel)
 	ActiveAddressPool.Remove(channel);
 	channel->AddressItem.InUse = false;
 	channel->User = nullptr;

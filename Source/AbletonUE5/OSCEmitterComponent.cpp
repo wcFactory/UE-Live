@@ -67,6 +67,7 @@ AOSCHost* UOSCEmitterComponent::GetOSCHost()
 void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
 {	
 	if(OSCHost == nullptr){return;}
+	StopMidiEvent();
 
 	AddressObject = OSCHost->GetAddressFromPool(this);
 
@@ -93,7 +94,7 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	if(OSCHost == nullptr){return;}
+	if(OSCHost == nullptr || AddressObject == nullptr){return;}
 
 	
 	FString prefix = "/midi";

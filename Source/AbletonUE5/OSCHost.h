@@ -8,6 +8,11 @@
 #include "OSCManager.h"
 #include "OSCHost.generated.h"
 
+//Forward Declaration
+class UOSCEmitterComponent;
+
+
+
 USTRUCT(BlueprintType)
 struct FOSCAddressItem
 {
@@ -20,7 +25,20 @@ struct FOSCAddressItem
 	bool InUse;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USceneComponent* User;
+	UOSCEmitterComponent* User;
+};
+
+UCLASS()
+class ABLETONUE5_API UOSCAddressObject : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	UOSCAddressObject();
+
+	FOSCAddressItem AddressItem;
+
 };
 
 UCLASS()
@@ -58,7 +76,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
-	FOSCAddressItem& GetAddressFromPool(USceneComponent* inUser);
+	void GetAddressFromPool(UOSCEmitterComponent* inEmitter);
 
 	UFUNCTION(BlueprintCallable)
 	void ReturnAddressToPool(FOSCAddressItem& Address);

@@ -14,6 +14,7 @@ UOSCEmitterComponent::UOSCEmitterComponent()
 	AttenuationRadius = 1000.0f;
 
 	// ...
+
 }
 
 
@@ -32,6 +33,8 @@ void UOSCEmitterComponent::BeginPlay()
 	}
 
 	InitialisePlayerController();
+
+	
 	
 }
 
@@ -63,6 +66,9 @@ AOSCHost* UOSCEmitterComponent::GetOSCHost()
 
 void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
 {
+	//
+	
+
 	int8 pitch = static_cast<int8>(NoteToPlay);
 	FString address = "/midi";
 	if(OSCHost){OSCHost->SendOSCMidiValue(pitch, Velocity, address);}
@@ -76,6 +82,7 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 	 	false, 
 	 	-1);
 
+	IsPlaying = true;
 }
 
 void UOSCEmitterComponent::StopMidiEvent()
@@ -83,6 +90,7 @@ void UOSCEmitterComponent::StopMidiEvent()
 	int8 pitch = static_cast<int8>(CurrentNote);
 	FString address = "/midi";
 	if(OSCHost){OSCHost->SendOSCMidiValue(pitch, 0, address);}
+	IsPlaying = false;
 }
 
 void UOSCEmitterComponent::InitialisePlayerController()

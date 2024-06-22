@@ -2,6 +2,7 @@
 
 
 #include "OSCHost.h"
+#include "OSCEmitterComponent.h"
 
 // Sets default values
 AOSCHost::AOSCHost()
@@ -17,6 +18,14 @@ AOSCHost::AOSCHost()
 	//Create the address pool
 	AddressPool = AssembleAddressPool();
 
+}
+
+
+UOSCAddressObject::UOSCAddressObject()
+{
+	AddressItem.Address = "";
+	AddressItem.InUse = false;
+	AddressItem.User = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -85,14 +94,16 @@ TArray<FOSCAddressItem> AOSCHost::AssembleAddressPool()
 	return pool;
 }
 
-FOSCAddressItem& AOSCHost::GetAddressFromPool(USceneComponent* inUser)
+void AOSCHost::GetAddressFromPool(UOSCEmitterComponent* inEmitter)
 {
     for (FOSCAddressItem& item : AddressPool)
     {
         if (!item.InUse)
         {
             item.InUse = true;
-            return item;
+			
+			
+            
         }
     }
     // Handle the case where no address is available

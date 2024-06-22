@@ -11,6 +11,8 @@ UOSCEmitterComponent::UOSCEmitterComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	AttenuationRadius = 1000.0f;
+
 	// ...
 }
 
@@ -41,6 +43,7 @@ void UOSCEmitterComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	// ...
 	UpdatePanningData();
+	UpdateAttenuationData();
 
 }
 
@@ -89,45 +92,14 @@ void UOSCEmitterComponent::InitialisePlayerController()
 
 void UOSCEmitterComponent::UpdatePanningData()
 {
-	if(PlayerController != nullptr)
-	{
+	if(PlayerController == nullptr){return;}
+	
 		//Get position info of listener
 		FVector listenerLocation, listenerFrontDir, listenerRightDir;
 		PlayerController->GetAudioListenerPosition(listenerLocation, listenerFrontDir, listenerRightDir);
 
-		//FOR DEBUGGING//
-		FColor lineColorA = FColor::Red;
-		FColor lineColorB = FColor::Blue;
-		float lineLength  = 1000.0f;
-		FVector lineEnd = listenerLocation + (listenerFrontDir * lineLength);
-		//
-
 		//Vector from Listener to emitter
 		FVector listenerEmitterVec = (this->GetComponentLocation() - listenerLocation);
-		FVector emitterLineEnd = this->GetComponentLocation() + (listenerEmitterVec * lineLength);
-
-		DrawDebugLine( //ListenerFWD Direction
-			GetWorld(),
-			listenerLocation,
-			lineEnd,
-			lineColorA,
-			false,
-			0.0f,
-			0,
-			1.0f
-		);
-
-		DrawDebugLine( //Emitter to listener
-			GetWorld(),
-			listenerLocation,
-			emitterLineEnd,
-			lineColorB,
-			false,
-			0.0f,
-			0,
-			1.0f
-		);
-
 
 		FVector normListenerFrontDir = listenerFrontDir.GetSafeNormal();
 		FVector normListenerEmitterDir = listenerEmitterVec.GetSafeNormal();
@@ -135,37 +107,34 @@ void UOSCEmitterComponent::UpdatePanningData()
 		normListenerFrontDir.Z = 0.0f;
 		normListenerEmitterDir.Z = 0.0f;
 	
-
 		normListenerFrontDir = normListenerFrontDir.GetSafeNormal();
 		normListenerEmitterDir = normListenerEmitterDir.GetSafeNormal();
 
-		// Calculate the dot product
 		float dotProduct = FVector::DotProduct(normListenerFrontDir, normListenerEmitterDir);
-
-		// Calculate the angle in radians
 		float angleRadians = acos(dotProduct);
-
-		// Calculate the cross product
 		FVector crossProduct = FVector::CrossProduct(normListenerFrontDir, normListenerEmitterDir);
-
-		// Determine the sign of the angle based on the Z component of the cross product
 		float angleSign = FMath::Sign(crossProduct.Z);
-
-		// Apply the sign to the angle in radians
 		angleRadians *= angleSign;
-
-		// Convert to degrees
 		float angleDegrees = FMath::RadiansToDegrees(angleRadians);
 
 		UE_LOG(LogTemp, Display, TEXT("Angle: %f"), angleDegrees);
 
-	
+		//Sendcall to update panning
 		
+}
 
+void UOSCEmitterComponent::UpdateAttenuationData()
+{
+	FVector listenerLocation;
+	FVector listenerFrontDir;
+	FVector listenerRightDir;
+	FVector emitterLocation = this->GetComponentLocation();
 
-		
-		
-	} 
+	PlayerController->GetAudioListenerPosition(listenerLocation, listenerFrontDir, listenerRightDir);
+	float distance = FVector::Distance(listenerLocation, emitterLocation);
+	float attenuation = 1 - (distance / AttenuationRadius);
+	if(attenuation < 0.0f ){attenuation = 0.0f;}
+	UE_LOG(LogTemp, Display, TEXT("Attenuation: %f"), attenuation);
 
-	
+	//Send call to update attenuation
 }

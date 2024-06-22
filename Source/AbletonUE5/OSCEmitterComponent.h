@@ -38,6 +38,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePanningData();
 
+
+	UPROPERTY(EditAnywhere)
+	float AttenuationRadius {0.0f};
+	UFUNCTION(BlueprintCallable)
+	void UpdateAttenuationData();
+
+
 	
 
 	

@@ -8,7 +8,7 @@
 AOSCHost::AOSCHost()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	//Create the OSC client
 	FString localHost = "127.0.0.1";
@@ -38,6 +38,7 @@ void AOSCHost::BeginPlay()
 void AOSCHost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	DebugAddressPool();
 
 }
 
@@ -122,4 +123,14 @@ void AOSCHost::Cull()
 	UOSCAddressObject* channelToCull = ActiveAddressPool[0];
 	channelToCull->User->StopMidiEvent();
 	
+}
+
+void AOSCHost::DebugAddressPool()
+{
+	
+	for (UOSCAddressObject* channel : AddressPool)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("Channel: %s, Active: %s"),
+		 *channel->AddressItem.Address, channel->AddressItem.InUse ? TEXT("True") : TEXT("False")));
+	}
 }

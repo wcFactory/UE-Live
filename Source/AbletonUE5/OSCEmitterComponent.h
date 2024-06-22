@@ -59,13 +59,13 @@ private:
 	//Playback
 	EMidiNote CurrentNote;
 	
-	bool IsPlaying = false; 
+	
 
 	//Spatial Audio
 	void InitialisePlayerController();
 	APlayerController* PlayerController = nullptr;
 
-	const UOSCAddressObject* AddressObject = nullptr;
+	UOSCAddressObject* AddressObject = nullptr;
 
 	
 

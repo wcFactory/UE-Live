@@ -65,6 +65,8 @@ private:
 	void InitialisePlayerController();
 	APlayerController* PlayerController = nullptr;
 
+	const UOSCAddressObject* AddressObject = nullptr;
+
 	
 
 

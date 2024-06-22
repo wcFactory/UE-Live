@@ -23,9 +23,6 @@ struct FOSCAddressItem
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool InUse;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UOSCEmitterComponent* User;
 };
 
 UCLASS()
@@ -37,7 +34,9 @@ public:
 
 	UOSCAddressObject();
 
-	FOSCAddressItem AddressItem;
+	FOSCAddressItem AddressItem = {"", false};
+
+	UOSCEmitterComponent* User = nullptr;
 
 };
 
@@ -76,16 +75,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
-	void GetAddressFromPool(UOSCEmitterComponent* inEmitter);
+	UOSCAddressObject* GetAddressFromPool(UOSCEmitterComponent* inEmitter);
 
 	UFUNCTION(BlueprintCallable)
-	void ReturnAddressToPool(FOSCAddressItem& Address);
+	void ReleaseAddress(UOSCAddressObject* channel);
 
 
 private:
 	TArray<FString> AddressList = {"ch01", "ch02", "ch03", "ch04", "ch05", "ch06", "ch07", "ch08", "ch09", "ch10", "ch11", "ch12", "ch13", "ch14", "ch15", "ch16"};
-	TArray<FOSCAddressItem> AddressPool;
-	TArray<FOSCAddressItem> AssembleAddressPool();
+	TArray<UOSCAddressObject*> AddressPool;
+	TArray<UOSCAddressObject*> ActiveAddressPool;
+	void AssembleAddressPool();
+	void Cull();
 };
 
 

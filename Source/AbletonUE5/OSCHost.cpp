@@ -15,17 +15,12 @@ AOSCHost::AOSCHost()
 	FString clientName = "AbletonOSCClient";
 	OSCClient = UOSCManager::CreateOSCClient(localHost, 1312, clientName, nullptr);
 
-	//Create the address pool
-	AddressPool = AssembleAddressPool();
-
 }
 
 
 UOSCAddressObject::UOSCAddressObject()
 {
-	AddressItem.Address = "";
-	AddressItem.InUse = false;
-	AddressItem.User = nullptr;
+	
 }
 
 // Called when the game starts or when spawned
@@ -33,12 +28,9 @@ void AOSCHost::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	for (auto address : AddressPool)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Adress: %s"), *address.Address);
-	}
+	//Create the address pool
+	AssembleAddressPool();
 	
-
 	
 }
 
@@ -79,38 +71,55 @@ void AOSCHost::SendOSCMidiValue(int32 Pitch, int32 Velocity, FString Address)
 	OSCClient->SendOSCMessage(message);   
 }
 
-TArray<FOSCAddressItem> AOSCHost::AssembleAddressPool()
+void AOSCHost::AssembleAddressPool()
 {
-	TArray<FOSCAddressItem> pool;
 	for (FString address : AddressList)
 	{
-		FOSCAddressItem item;
-		item.Address = address;
-		item.InUse = false;
-		item.User = nullptr;
-		pool.Add(item);
+		UOSCAddressObject* channel = NewObject<UOSCAddressObject>();
+		if (channel != nullptr)
+		{
+			channel->AddressItem.Address = address;
+			AddressPool.Add(channel);
+		}
+		
+		
 	}
-
-	return pool;
 }
 
-void AOSCHost::GetAddressFromPool(UOSCEmitterComponent* inEmitter)
+UOSCAddressObject* AOSCHost::GetAddressFromPool(UOSCEmitterComponent* inEmitter)
 {
-    for (FOSCAddressItem& item : AddressPool)
-    {
-        if (!item.InUse)
-        {
-            item.InUse = true;
-			
-			
-            
-        }
-    }
-    // Handle the case where no address is available
-    throw std::runtime_error("No available address in pool.");
+	bool bChannelWasFound = false;
+	while (!bChannelWasFound)
+	{
+		for (UOSCAddressObject* channel : AddressPool)
+		{
+			if (!channel->AddressItem.InUse && channel->User == nullptr)
+			{
+			channel->AddressItem.InUse = true;
+			channel->User = inEmitter;
+			ActiveAddressPool.Add(channel);
+			bChannelWasFound = true;
+			return channel;
+			}
+		}
+		if (!bChannelWasFound)
+		{
+			Cull();
+		}
+	}
+	return nullptr;
 }
 
-void AOSCHost::ReturnAddressToPool(FOSCAddressItem& Address)
+void AOSCHost::ReleaseAddress(UOSCAddressObject* channel)
 {
-	Address.InUse = false;
+	ActiveAddressPool.Remove(channel);
+	channel->AddressItem.InUse = false;
+	channel->User = nullptr;
+}
+
+void AOSCHost::Cull()
+{
+	UOSCAddressObject* channelToCull = ActiveAddressPool[0];
+	channelToCull->User->StopMidiEvent();
+	
 }

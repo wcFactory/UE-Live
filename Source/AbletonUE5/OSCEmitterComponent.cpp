@@ -87,7 +87,9 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
+
 	int8 pitch = static_cast<int8>(CurrentNote);
+	FString addressSuffix = AddressObject->AddressItem.Address;
 	FString address = "/midi";
 	if(OSCHost){OSCHost->SendOSCMidiValue(pitch, 0, address);}
 	IsPlaying = false;

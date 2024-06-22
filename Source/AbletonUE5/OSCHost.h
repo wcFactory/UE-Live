@@ -8,6 +8,21 @@
 #include "OSCManager.h"
 #include "OSCHost.generated.h"
 
+USTRUCT(BlueprintType)
+struct FOSCAddressItem
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Address;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool InUse;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* User;
+};
+
 UCLASS()
 class ABLETONUE5_API AOSCHost : public AActor
 {
@@ -42,9 +57,17 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable)
+	FOSCAddressItem& GetAddressFromPool(USceneComponent* inUser);
+
+	UFUNCTION(BlueprintCallable)
+	void ReturnAddressToPool(FOSCAddressItem& Address);
 
 
-
+private:
+	TArray<FString> AddressList = {"ch01", "ch02", "ch03", "ch04", "ch05", "ch06", "ch07", "ch08", "ch09", "ch10", "ch11", "ch12", "ch13", "ch14", "ch15", "ch16"};
+	TArray<FOSCAddressItem> AddressPool;
+	TArray<FOSCAddressItem> AssembleAddressPool();
 };
 
 

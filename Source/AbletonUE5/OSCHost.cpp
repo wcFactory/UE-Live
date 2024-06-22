@@ -9,9 +9,13 @@ AOSCHost::AOSCHost()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	//Create the OSC client
 	FString localHost = "127.0.0.1";
 	FString clientName = "AbletonOSCClient";
 	OSCClient = UOSCManager::CreateOSCClient(localHost, 1312, clientName, nullptr);
+
+	//Create the address pool
+	AddressPool = AssembleAddressPool();
 
 }
 
@@ -20,6 +24,12 @@ void AOSCHost::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	for (auto address : AddressPool)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Adress: %s"), *address.Address);
+	}
+	
+
 	
 }
 
@@ -58,4 +68,38 @@ void AOSCHost::SendOSCMidiValue(int32 Pitch, int32 Velocity, FString Address)
 	UOSCManager::AddInt32(message, Pitch);
 	UOSCManager::AddInt32(message, Velocity);
 	OSCClient->SendOSCMessage(message);   
+}
+
+TArray<FOSCAddressItem> AOSCHost::AssembleAddressPool()
+{
+	TArray<FOSCAddressItem> pool;
+	for (FString address : AddressList)
+	{
+		FOSCAddressItem item;
+		item.Address = address;
+		item.InUse = false;
+		item.User = nullptr;
+		pool.Add(item);
+	}
+
+	return pool;
+}
+
+FOSCAddressItem& AOSCHost::GetAddressFromPool(USceneComponent* inUser)
+{
+    for (FOSCAddressItem& item : AddressPool)
+    {
+        if (!item.InUse)
+        {
+            item.InUse = true;
+            return item;
+        }
+    }
+    // Handle the case where no address is available
+    throw std::runtime_error("No available address in pool.");
+}
+
+void AOSCHost::ReturnAddressToPool(FOSCAddressItem& Address)
+{
+	Address.InUse = false;
 }

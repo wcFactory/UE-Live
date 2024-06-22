@@ -36,7 +36,7 @@ public:
 	void StopMidiEvent();
 
 	UFUNCTION(BlueprintCallable)
-	void SetSpatialData();
+	void UpdatePanningData();
 
 	
 

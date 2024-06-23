@@ -22,7 +22,7 @@ struct FOSCAddressItem
 	FString Address;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool InUse;
+	bool InUse = false;
 };
 
 UCLASS()

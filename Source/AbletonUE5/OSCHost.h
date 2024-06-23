@@ -87,6 +87,8 @@ private:
 	TArray<UOSCAddressObject*> ActiveAddressPool;
 	void AssembleAddressPool();
 	void Cull();
+
+	void DebugAddressPool();
 };
 
 

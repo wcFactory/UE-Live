@@ -65,18 +65,22 @@ AOSCHost* UOSCEmitterComponent::GetOSCHost()
 }
 
 void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
-{
+{	
 	if(OSCHost == nullptr){return;}
+	StopMidiEvent();
 
 	AddressObject = OSCHost->GetAddressFromPool(this);
 
-	FString addressSuffix = AddressObject->AddressItem.Address;
-	FString address = "/midi" + addressSuffix;
+	FString prefix = "/midi";
+	FString suffix = AddressObject->AddressItem.Address;
+	FString address = prefix + suffix;
 
 	int8 pitch = static_cast<int8>(NoteToPlay);
-	
+
 	OSCHost->SendOSCMidiValue(pitch, Velocity, address);
+
 	CurrentNote = NoteToPlay;
+
 	FTimerHandle timerHandle;
 	 GetWorld()->GetTimerManager().SetTimer(
 		timerHandle, 
@@ -86,19 +90,22 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 	 	false, 
 	 	-1);
 
-	
 }
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	if(OSCHost == nullptr){return;}
+	if(OSCHost == nullptr || AddressObject == nullptr){return;}
+
+	
+	FString prefix = "/midi";
+	FString suffix = AddressObject->AddressItem.Address;
+	FString address = prefix + suffix;
 
 	int8 pitch = static_cast<int8>(CurrentNote);
-	FString addressSuffix = AddressObject->AddressItem.Address;
-	FString address = "/midi" + addressSuffix;
-	OSCHost->SendOSCMidiValue(pitch, 0, address);
-	OSCHost->ReleaseAddress(AddressObject);
 
+	OSCHost->SendOSCMidiValue(pitch, 0, address);
+	
+	OSCHost->ReleaseAddress(AddressObject);
 }
 
 void UOSCEmitterComponent::InitialisePlayerController()

@@ -79,6 +79,8 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 	OSCHost->SendOSCMidiValue(pitch, Velocity, address);
 
+	UE_LOG(LogTemp, Display, TEXT("Address: %s"), *address);
+
 	CurrentNote = NoteToPlay;
 
 	FTimerHandle timerHandle;

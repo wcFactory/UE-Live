@@ -59,7 +59,7 @@ private:
 	//Playback
 	EMidiNote CurrentNote;
 	
-	bool IsPlaying = false; 
+	
 
 	//Spatial Audio
 	void InitialisePlayerController();

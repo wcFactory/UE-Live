@@ -90,8 +90,14 @@ void AOSCHost::AssembleAddressPool()
 UOSCAddressObject* AOSCHost::GetAddressFromPool(UOSCEmitterComponent* inEmitter)
 {
 	bool bChannelWasFound = false;
+	int loopCount = 0;
 	while (!bChannelWasFound)
 	{
+		if(loopCount > AddressPool.Num())
+		{
+			UE_LOG(LogTemp, Error, TEXT("All channels were culled in Object pool"));
+			break;
+		}
 		for (UOSCAddressObject* channel : AddressPool)
 		{
 			if (!channel->AddressItem.InUse && channel->User == nullptr)

@@ -25,6 +25,13 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
+	void UpdatePanningData();
+
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateAttenuationData();
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -35,12 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopMidiEvent();
 
-	UFUNCTION(BlueprintCallable)
-	void UpdatePanningData();
 
-	
-	UFUNCTION(BlueprintCallable)
-	void UpdateAttenuationData();
 
 
 	UPROPERTY(EditAnywhere)
@@ -59,13 +61,16 @@ private:
 	//Playback
 	EMidiNote CurrentNote;
 	
-	
+
 
 	//Spatial Audio
 	void InitialisePlayerController();
 	APlayerController* PlayerController = nullptr;
 
 	UOSCAddressObject* AddressObject = nullptr;
+
+	void TransmitPanningData(float angle);
+	void TransmitAttenuationData(float attenuation);
 
 	
 

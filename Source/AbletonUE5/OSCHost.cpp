@@ -38,7 +38,7 @@ void AOSCHost::BeginPlay()
 void AOSCHost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	DebugAddressPool();
+	//DebugAddressPool();
 
 }
 

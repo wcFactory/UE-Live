@@ -117,34 +117,42 @@ void UOSCEmitterComponent::InitialisePlayerController()
 
 void UOSCEmitterComponent::UpdatePanningData()
 {
-	if(PlayerController == nullptr){return;}
-	
-		//Get position info of listener
-		FVector listenerLocation, listenerFrontDir, listenerRightDir;
-		PlayerController->GetAudioListenerPosition(listenerLocation, listenerFrontDir, listenerRightDir);
+	if (PlayerController == nullptr) { return; }
 
-		//Vector from Listener to emitter
-		FVector listenerEmitterVec = (this->GetComponentLocation() - listenerLocation);
+	//Get position info of listener
+	FVector listenerLocation, listenerFrontDir, listenerRightDir;
+	PlayerController->GetAudioListenerPosition(listenerLocation, listenerFrontDir, listenerRightDir);
 
-		FVector normListenerFrontDir = listenerFrontDir.GetSafeNormal();
-		FVector normListenerEmitterDir = listenerEmitterVec.GetSafeNormal();
+	//Vector from Listener to emitter
+	FVector listenerEmitterVec = (this->GetComponentLocation() - listenerLocation);
 
-		normListenerFrontDir.Z = 0.0f;
-		normListenerEmitterDir.Z = 0.0f;
-	
-		normListenerFrontDir = normListenerFrontDir.GetSafeNormal();
-		normListenerEmitterDir = normListenerEmitterDir.GetSafeNormal();
+	FVector normListenerFrontDir = listenerFrontDir.GetSafeNormal();
+	FVector normListenerEmitterDir = listenerEmitterVec.GetSafeNormal();
 
-		float dotProduct = FVector::DotProduct(normListenerFrontDir, normListenerEmitterDir);
-		float angleRadians = acos(dotProduct);
-		FVector crossProduct = FVector::CrossProduct(normListenerFrontDir, normListenerEmitterDir);
-		float angleSign = FMath::Sign(crossProduct.Z);
-		angleRadians *= angleSign;
-		float angleDegrees = FMath::RadiansToDegrees(angleRadians);
+	normListenerFrontDir.Z = 0.0f;
+	normListenerEmitterDir.Z = 0.0f;
 
-		UE_LOG(LogTemp, Display, TEXT("Angle: %f"), angleDegrees);
+	normListenerFrontDir = normListenerFrontDir.GetSafeNormal();
+	normListenerEmitterDir = normListenerEmitterDir.GetSafeNormal();
 
-		//Sendcall to update panning
+	float dotProduct = FVector::DotProduct(normListenerFrontDir, normListenerEmitterDir);
+	float angleRadians = acos(dotProduct);
+	FVector crossProduct = FVector::CrossProduct(normListenerFrontDir, normListenerEmitterDir);
+	float angleSign = FMath::Sign(crossProduct.Z);
+	angleRadians *= angleSign;
+
+	float pan = sin(angleRadians);
+
+	// Adjust pan from range -1 to 1, to 0 to 1
+	float adjustedPan = (pan + 1.0f) / 2.0f;
+
+	UE_LOG(LogTemp, Display, TEXT("Radians: %f"), angleRadians);
+	UE_LOG(LogTemp, Display, TEXT("Adjusted pan: %f"), adjustedPan);
+
+	// Use adjustedPan for systems that expect panning values in the range of 0 to 1
+	TransmitPanningData(adjustedPan);
+
+		
 		
 }
 
@@ -158,8 +166,20 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 	PlayerController->GetAudioListenerPosition(listenerLocation, listenerFrontDir, listenerRightDir);
 	float distance = FVector::Distance(listenerLocation, emitterLocation);
 	float attenuation = 1 - (distance / AttenuationRadius);
-	if(attenuation < 0.0f ){attenuation = 0.0f;}
-	UE_LOG(LogTemp, Display, TEXT("Attenuation: %f"), attenuation);
+	
+	attenuation = FMath::Clamp(attenuation, 0.0f, 1.0f);
+	//UE_LOG(LogTemp, Display, TEXT("Attenuation: %f"), attenuation);
 
 	//Send call to update attenuation
+	//TransmitAttenuationData(attenuation);
+}
+
+void UOSCEmitterComponent::TransmitPanningData(float angle)
+{
+	OSCHost->SendOSCFloat(angle, "/panning");
+}
+
+void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
+{
+	OSCHost->SendOSCFloat(attenuation, "/attenuation");
 }

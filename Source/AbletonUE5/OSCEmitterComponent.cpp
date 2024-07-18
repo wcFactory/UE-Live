@@ -45,8 +45,8 @@ void UOSCEmitterComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	//UpdatePanningData();
-	//UpdateAttenuationData();
+	UpdatePanningData();
+	UpdateAttenuationData();
 
 }
 
@@ -166,11 +166,15 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 void UOSCEmitterComponent::TransmitPanningData(float angle)
 {
 	float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
-	OSCHost->SendOSCFloat(smoothedPanning, "/panning");
+	FString suffixPanning = "/panning";
+	FString address = Address + suffixPanning;
+	OSCHost->SendOSCFloat(smoothedPanning, address);
 }
 
 void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
 {
 	float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);
-	OSCHost->SendOSCFloat(smoothedAttenutation, "/attenuation");
+	FString suffixAttenuation = "/attenuation";
+	FString address = Address + suffixAttenuation;
+	OSCHost->SendOSCFloat(smoothedAttenutation, address);
 }

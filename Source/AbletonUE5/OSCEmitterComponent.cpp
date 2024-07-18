@@ -171,7 +171,7 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 	//UE_LOG(LogTemp, Display, TEXT("Attenuation: %f"), attenuation);
 
 	//Send call to update attenuation
-	//TransmitAttenuationData(attenuation);
+	TransmitAttenuationData(attenuation);
 }
 
 void UOSCEmitterComponent::TransmitPanningData(float angle)

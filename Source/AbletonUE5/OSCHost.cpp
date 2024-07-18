@@ -18,10 +18,7 @@ AOSCHost::AOSCHost()
 }
 
 
-UOSCAddressObject::UOSCAddressObject()
-{
-	
-}
+
 
 // Called when the game starts or when spawned
 void AOSCHost::BeginPlay()
@@ -29,7 +26,7 @@ void AOSCHost::BeginPlay()
 	Super::BeginPlay();
 	
 	//Create the address pool
-	AssembleAddressPool();
+	
 	
 	
 }
@@ -38,7 +35,7 @@ void AOSCHost::BeginPlay()
 void AOSCHost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//DebugAddressPool();
+	
 
 }
 
@@ -70,74 +67,7 @@ void AOSCHost::SendOSCMidiValue(int32 Pitch, int32 Velocity, FString Address)
 	UOSCManager::AddInt32(message, Pitch);
 	UOSCManager::AddInt32(message, Velocity);
 	OSCClient->SendOSCMessage(message);   
+	UE_LOG(LogTemp, Warning, TEXT("OSC Message sent to Address: %s. Pitch: %i. Velocity: %f"), *Address, Pitch, Velocity);
 }
 
-void AOSCHost::AssembleAddressPool()
-{
-	for (FString address : AddressList)
-	{
-		UOSCAddressObject* channel = NewObject<UOSCAddressObject>();
-		if (channel != nullptr)
-		{
-			channel->AddressItem.Address = address;
-			AddressPool.Add(channel);
-		}
-		
-		
-	}
-}
 
-UOSCAddressObject* AOSCHost::GetAddressFromPool(UOSCEmitterComponent* inEmitter)
-{
-	bool bChannelWasFound = false;
-	int loopCount = 0;
-	while (!bChannelWasFound)
-	{
-		if(loopCount > AddressPool.Num())
-		{
-			UE_LOG(LogTemp, Error, TEXT("All channels were culled in Object pool"));
-			break;
-		}
-		for (UOSCAddressObject* channel : AddressPool)
-		{
-			if (!channel->AddressItem.InUse && channel->User == nullptr)
-			{
-			channel->AddressItem.InUse = true;
-			channel->User = inEmitter;
-			ActiveAddressPool.Add(channel);
-			bChannelWasFound = true;
-			return channel;
-			}
-		}
-		if (!bChannelWasFound)
-		{
-			Cull();
-		}
-	}
-	return nullptr;
-}
-
-void AOSCHost::ReleaseAddress(UOSCAddressObject* channel)
-{
-	if(channel)
-	ActiveAddressPool.Remove(channel);
-	channel->AddressItem.InUse = false;
-	channel->User = nullptr;
-}
-
-void AOSCHost::Cull()
-{
-	UOSCAddressObject* channelToCull = ActiveAddressPool[0];
-	channelToCull->User->StopMidiEvent();
-	
-}
-
-void AOSCHost::DebugAddressPool()
-{
-	
-	for (UOSCAddressObject* channel : AddressPool)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("Channel: %s, Active: %s"),
-		 *channel->AddressItem.Address, channel->AddressItem.InUse ? TEXT("True") : TEXT("False")));
-	}
-}

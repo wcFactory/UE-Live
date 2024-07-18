@@ -48,6 +48,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float AttenuationRadius {0.0f};
 
+	UPROPERTY(EditAnywhere)
+	FString Address = "None";
 	
 	
 	
@@ -66,8 +68,6 @@ private:
 	//Spatial Audio
 	void InitialisePlayerController();
 	APlayerController* PlayerController = nullptr;
-
-	UOSCAddressObject* AddressObject = nullptr;
 
 	void TransmitPanningData(float angle);
 	void TransmitAttenuationData(float attenuation);

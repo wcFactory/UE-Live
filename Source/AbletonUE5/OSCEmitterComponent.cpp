@@ -69,17 +69,11 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 	if(OSCHost == nullptr){return;}
 	StopMidiEvent();
 
-	AddressObject = OSCHost->GetAddressFromPool(this);
-
-	FString prefix = "/midi";
-	FString suffix = AddressObject->AddressItem.Address;
-	FString address = prefix + suffix;
-
 	int8 pitch = static_cast<int8>(NoteToPlay);
 
-	OSCHost->SendOSCMidiValue(pitch, Velocity, address);
+	OSCHost->SendOSCMidiValue(pitch, Velocity, Address);
 
-	UE_LOG(LogTemp, Display, TEXT("Address: %s"), *address);
+
 
 	CurrentNote = NoteToPlay;
 
@@ -96,18 +90,13 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	if(OSCHost == nullptr || AddressObject == nullptr){return;}
-
-	
-	FString prefix = "/midi";
-	FString suffix = AddressObject->AddressItem.Address;
-	FString address = prefix + suffix;
+	if(OSCHost == nullptr){return;}
 
 	int8 pitch = static_cast<int8>(CurrentNote);
 
-	OSCHost->SendOSCMidiValue(pitch, 0, address);
+	OSCHost->SendOSCMidiValue(pitch, 0, Address);
 	
-	OSCHost->ReleaseAddress(AddressObject);
+	
 }
 
 void UOSCEmitterComponent::InitialisePlayerController()
@@ -146,8 +135,8 @@ void UOSCEmitterComponent::UpdatePanningData()
 	// Adjust pan from range -1 to 1, to 0 to 1
 	float adjustedPan = (pan + 1.0f) / 2.0f;
 
-	UE_LOG(LogTemp, Display, TEXT("Radians: %f"), angleRadians);
-	UE_LOG(LogTemp, Display, TEXT("Adjusted pan: %f"), adjustedPan);
+	//UE_LOG(LogTemp, Display, TEXT("Radians: %f"), angleRadians);
+	//UE_LOG(LogTemp, Display, TEXT("Adjusted pan: %f"), adjustedPan);
 
 	// Use adjustedPan for systems that expect panning values in the range of 0 to 1
 	TransmitPanningData(adjustedPan);
@@ -177,11 +166,15 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 void UOSCEmitterComponent::TransmitPanningData(float angle)
 {
 	float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
-	OSCHost->SendOSCFloat(smoothedPanning, "/panning");
+	FString suffixPanning = "/panning";
+	FString address = Address + suffixPanning;
+	OSCHost->SendOSCFloat(smoothedPanning, address);
 }
 
 void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
 {
 	float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);
-	OSCHost->SendOSCFloat(smoothedAttenutation, "/attenuation");
+	FString suffixAttenuation = "/attenuation";
+	FString address = Address + suffixAttenuation;
+	OSCHost->SendOSCFloat(smoothedAttenutation, address);
 }

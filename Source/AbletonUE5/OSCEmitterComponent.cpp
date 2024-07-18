@@ -176,10 +176,12 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 
 void UOSCEmitterComponent::TransmitPanningData(float angle)
 {
-	OSCHost->SendOSCFloat(angle, "/panning");
+	float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
+	OSCHost->SendOSCFloat(smoothedPanning, "/panning");
 }
 
 void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
 {
-	OSCHost->SendOSCFloat(attenuation, "/attenuation");
+	float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);
+	OSCHost->SendOSCFloat(smoothedAttenutation, "/attenuation");
 }

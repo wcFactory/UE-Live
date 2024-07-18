@@ -45,8 +45,8 @@ void UOSCEmitterComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	UpdatePanningData();
-	UpdateAttenuationData();
+	//UpdatePanningData();
+	//UpdateAttenuationData();
 
 }
 
@@ -69,17 +69,11 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 	if(OSCHost == nullptr){return;}
 	StopMidiEvent();
 
-	AddressObject = OSCHost->GetAddressFromPool(this);
-
-	FString prefix = "/midi";
-	FString suffix = AddressObject->AddressItem.Address;
-	FString address = prefix + suffix;
-
 	int8 pitch = static_cast<int8>(NoteToPlay);
 
-	OSCHost->SendOSCMidiValue(pitch, Velocity, address);
+	OSCHost->SendOSCMidiValue(pitch, Velocity, Address);
 
-	UE_LOG(LogTemp, Display, TEXT("Address: %s"), *address);
+
 
 	CurrentNote = NoteToPlay;
 
@@ -96,18 +90,13 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	if(OSCHost == nullptr || AddressObject == nullptr){return;}
-
-	
-	FString prefix = "/midi";
-	FString suffix = AddressObject->AddressItem.Address;
-	FString address = prefix + suffix;
+	if(OSCHost == nullptr){return;}
 
 	int8 pitch = static_cast<int8>(CurrentNote);
 
-	OSCHost->SendOSCMidiValue(pitch, 0, address);
+	OSCHost->SendOSCMidiValue(pitch, 0, Address);
 	
-	OSCHost->ReleaseAddress(AddressObject);
+	
 }
 
 void UOSCEmitterComponent::InitialisePlayerController()
@@ -146,8 +135,8 @@ void UOSCEmitterComponent::UpdatePanningData()
 	// Adjust pan from range -1 to 1, to 0 to 1
 	float adjustedPan = (pan + 1.0f) / 2.0f;
 
-	UE_LOG(LogTemp, Display, TEXT("Radians: %f"), angleRadians);
-	UE_LOG(LogTemp, Display, TEXT("Adjusted pan: %f"), adjustedPan);
+	//UE_LOG(LogTemp, Display, TEXT("Radians: %f"), angleRadians);
+	//UE_LOG(LogTemp, Display, TEXT("Adjusted pan: %f"), adjustedPan);
 
 	// Use adjustedPan for systems that expect panning values in the range of 0 to 1
 	TransmitPanningData(adjustedPan);

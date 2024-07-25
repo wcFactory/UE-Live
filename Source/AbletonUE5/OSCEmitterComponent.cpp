@@ -11,7 +11,7 @@ UOSCEmitterComponent::UOSCEmitterComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	AttenuationRadius = 1000.0f;
+	AttenuationRadius = 2500.0f;
 
 	// ...
 

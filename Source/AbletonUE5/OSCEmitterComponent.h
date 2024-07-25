@@ -42,12 +42,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopMidiEvent();
 
+	UFUNCTION(BlueprintCallable)
+	void SetAddress(FString NewAddress);
 
 
 
 	UPROPERTY(EditAnywhere)
 	float AttenuationRadius {0.0f};
 
+
+	
 	UPROPERTY(EditAnywhere)
 	FString Address = "None";
 	

@@ -67,6 +67,11 @@ AOSCHost* UOSCEmitterComponent::GetOSCHost()
 void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
 {	
 	if(OSCHost == nullptr){return;}
+	if(Address.IsEmpty() || Address == "None")
+	{
+		UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
+		return;
+	}
 	StopMidiEvent();
 
 	int8 pitch = static_cast<int8>(NoteToPlay);
@@ -91,12 +96,22 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 void UOSCEmitterComponent::StopMidiEvent()
 {
 	if(OSCHost == nullptr){return;}
+	if (Address.IsEmpty() || Address == "None")
+	{
+		UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
+		return;
+	}
 
 	int8 pitch = static_cast<int8>(CurrentNote);
 
 	OSCHost->SendOSCMidiValue(pitch, 0, Address);
 	
 	
+}
+
+void UOSCEmitterComponent::SetAddress(FString NewAddress)
+{
+		Address = NewAddress;
 }
 
 void UOSCEmitterComponent::InitialisePlayerController()

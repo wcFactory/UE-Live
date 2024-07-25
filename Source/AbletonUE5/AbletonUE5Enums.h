@@ -89,6 +89,15 @@ enum class EMidiNote : uint8
 	Ds6 = 75,
 	E6 = 76,
 };
+
+UENUM(BlueprintType)
+enum class EProjectileSound : uint8
+{
+	None,
+	Spawn,
+	Bounce,
+	Destroy,
+};
 class ABLETONUE5_API AbletonUE5Enums
 {
 public:

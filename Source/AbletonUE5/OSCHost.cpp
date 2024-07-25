@@ -67,7 +67,7 @@ void AOSCHost::SendOSCMidiValue(int32 Pitch, int32 Velocity, FString Address)
 	UOSCManager::AddInt32(message, Pitch);
 	UOSCManager::AddInt32(message, Velocity);
 	OSCClient->SendOSCMessage(message);   
-	UE_LOG(LogTemp, Warning, TEXT("OSC Message sent to Address: %s. Pitch: %i. Velocity: %f"), *Address, Pitch, Velocity);
+	
 }
 
 

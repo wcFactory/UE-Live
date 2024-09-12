@@ -4,6 +4,7 @@
 #include "OSCProjectile.h"
 #include "OSCEmitterComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -48,8 +49,15 @@ void AOSCProjectile::Tick(float DeltaTime)
 
 void AOSCProjectile::PlaySound(EProjectileSound SoundType)
 {
+	double velocity = ProjectileMovementComponent->Velocity.Size();
+	
+	double midiVelocity = UKismetMathLibrary::NormalizeToRange(velocity, 0.0, 1300) * 127.0;
+
+	//Avoid bounce spam
+	if (midiVelocity < 10.0 && SoundType == EProjectileSound::Bounce) { return; }
+
 	EMidiNote noteToPlay = Sounds[SoundType];
-	OSCEmitterComponent->PlayMidiEvent(noteToPlay, 127, 0.5f);
+	OSCEmitterComponent->PlayMidiEvent(noteToPlay, midiVelocity, 0.5f);
 
 }
 

@@ -171,7 +171,7 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 	float distance = FVector::Distance(listenerLocation, emitterLocation);
 	float attenuation = 1 - (distance / AttenuationRadius);
 	
-	attenuation = FMath::Clamp(attenuation, 0.0f, 1.0f);
+	attenuation = FMath::Clamp(attenuation, 0.0f, 0.85f);
 	//UE_LOG(LogTemp, Display, TEXT("Attenuation: %f"), attenuation);
 
 	//Send call to update attenuation

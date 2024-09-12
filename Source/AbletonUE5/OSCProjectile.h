@@ -34,6 +34,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
+	
+
 	UPROPERTY(EditAnywhere)
 	TMap<EProjectileSound, EMidiNote> Sounds;
 	

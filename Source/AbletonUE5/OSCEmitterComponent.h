@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "OSCHost.h"
 #include "Kismet/GameplayStatics.h"
 #include "AbletonUE5Enums.h"
 #include "OSCEmitterComponent.generated.h"
@@ -60,14 +59,8 @@ public:
 
 private:
 
-	//OSC Host
-	AOSCHost* GetOSCHost();
-	AOSCHost* OSCHost = nullptr;
-
 	//Playback
 	EMidiNote CurrentNote;
-	
-
 
 	//Spatial Audio
 	void InitialisePlayerController();

@@ -2,6 +2,7 @@
 
 
 #include "OSCEmitterComponent.h"
+#include "OSCSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -23,15 +24,6 @@ void UOSCEmitterComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(GetOSCHost())
-	{
-		OSCHost = GetOSCHost();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("OSCHost not found"));
-	}
-
 	InitialisePlayerController();
 
 	
@@ -50,35 +42,24 @@ void UOSCEmitterComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 }
 
-AOSCHost* UOSCEmitterComponent::GetOSCHost()
-{
-	if (OSCHost == nullptr)
-	{
-		TArray<AActor*> FoundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AOSCHost::StaticClass(), FoundActors);
-		if (FoundActors.Num() > 0)
-		{
-			OSCHost = Cast<AOSCHost>(FoundActors[0]);
-		}
-	}
-	return OSCHost;
-}
-
 void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
 {	
-	if(OSCHost == nullptr){return;}
-	if(Address.IsEmpty() || Address == "None")
+
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
+	if(osc)
 	{
-		UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
-		return;
+		if (Address.IsEmpty() || Address == "None")
+		{
+			UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
+			return;
+		}
+
+		StopMidiEvent();
+
+		int8 pitch = static_cast<int8>(NoteToPlay);
+
+		osc->SendOSCMidiValue(pitch, Velocity, Address);
 	}
-	StopMidiEvent();
-
-	int8 pitch = static_cast<int8>(NoteToPlay);
-
-	OSCHost->SendOSCMidiValue(pitch, Velocity, Address);
-
-
 
 	CurrentNote = NoteToPlay;
 
@@ -95,16 +76,21 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	if(OSCHost == nullptr){return;}
-	if (Address.IsEmpty() || Address == "None")
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
+	if (osc)
 	{
-		UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
-		return;
+		if (Address.IsEmpty() || Address == "None")
+		{
+			UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
+			return;
+		}
+
+		int8 pitch = static_cast<int8>(CurrentNote);
+
+		osc->SendOSCMidiValue(pitch, 0, Address);
+
 	}
-
-	int8 pitch = static_cast<int8>(CurrentNote);
-
-	OSCHost->SendOSCMidiValue(pitch, 0, Address);
+	
 	
 	
 }
@@ -180,16 +166,27 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 
 void UOSCEmitterComponent::TransmitPanningData(float angle)
 {
-	float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
-	FString suffixPanning = "/panning";
-	FString address = Address + suffixPanning;
-	OSCHost->SendOSCFloat(smoothedPanning, address);
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
+	if (osc)
+	{
+		float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
+		FString suffixPanning = "/panning";
+		FString address = Address + suffixPanning;
+		osc->SendOSCFloat(smoothedPanning, address);
+	}
+
+	
 }
 
 void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
 {
-	float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);
-	FString suffixAttenuation = "/attenuation";
-	FString address = Address + suffixAttenuation;
-	OSCHost->SendOSCFloat(smoothedAttenutation, address);
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
+	if (osc)
+	{
+		float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);
+		FString suffixAttenuation = "/attenuation";
+		FString address = Address + suffixAttenuation;
+		osc->SendOSCFloat(smoothedAttenutation, address);
+	}
+	
 }

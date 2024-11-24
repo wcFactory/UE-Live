@@ -13,6 +13,11 @@ void UOSCSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+
+	
+
+
+
 	UE_LOG(LogOSCSubsystem, Display, TEXT("OSC Subsystem Initialized"));
 }
 
@@ -44,12 +49,7 @@ void UOSCSubsystem::SendOSCFloat(double floatToSend, FString address)
 	FOSCAddress oscAddress = UOSCManager::ConvertStringToOSCAddress(address);
 	message.SetAddress(oscAddress);
 	UOSCManager::AddFloat(message, floatToSend);
-
-   	if(OSCClient){OSCClient->SendOSCMessage(message);}
-	else
-	{
-		UE_LOG(LogOSCSubsystem, Error, TEXT("OSC Client is null"));
-	}
+	OSCClient->SendOSCMessage(message);
 }
 
 void UOSCSubsystem::SendOSCInt(int32 intToSend, FString address)

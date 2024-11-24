@@ -36,7 +36,7 @@ void AOSCProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Projectile with OSC Address %s"), *OSCEmitterComponent->Address);
-	
+	OSCEmitterComponent->PlayMidiEvent(EMidiNote::C5, 127, 1.0f);
 	
 }
 

@@ -11,13 +11,11 @@ UOSCEmitterComponent::UOSCEmitterComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 0.1f;
 
 	AttenuationRadius = 2500.0f;
 
 	// ...
 
-	
 }
 
 
@@ -25,7 +23,7 @@ UOSCEmitterComponent::UOSCEmitterComponent()
 void UOSCEmitterComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
+
 	InitialisePlayerController();
 
 	
@@ -47,7 +45,7 @@ void UOSCEmitterComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, float Duration)
 {	
 
-	
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if(osc)
 	{
 		if (Address.IsEmpty() || Address == "None")
@@ -78,7 +76,7 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 
 void UOSCEmitterComponent::StopMidiEvent()
 {
-	
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if (osc)
 	{
 		if (Address.IsEmpty() || Address == "None")
@@ -168,11 +166,10 @@ void UOSCEmitterComponent::UpdateAttenuationData()
 
 void UOSCEmitterComponent::TransmitPanningData(float angle)
 {
-	
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if (osc)
 	{
 		float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
-		UE_LOG(LogTemp, Display, TEXT("Panning: %f"), smoothedPanning)
 		FString suffixPanning = "/panning";
 		FString address = Address + suffixPanning;
 		osc->SendOSCFloat(smoothedPanning, address);
@@ -183,7 +180,7 @@ void UOSCEmitterComponent::TransmitPanningData(float angle)
 
 void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
 {
-	
+	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if (osc)
 	{
 		float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);

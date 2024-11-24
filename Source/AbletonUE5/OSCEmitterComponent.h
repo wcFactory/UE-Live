@@ -69,6 +69,8 @@ private:
 	void TransmitPanningData(float angle);
 	void TransmitAttenuationData(float attenuation);
 
+	class UOSCSubsystem* osc;
+
 	
 
 

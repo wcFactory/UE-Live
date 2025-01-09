@@ -11,6 +11,7 @@ UOSCEmitterComponent::UOSCEmitterComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.016f;
 
 	AttenuationRadius = 2500.0f;
 
@@ -48,6 +49,8 @@ void UOSCEmitterComponent::PlayMidiEvent(EMidiNote NoteToPlay, int Velocity, flo
 	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if(osc)
 	{
+		if (!osc->GetIsTransmitterSocketActive()) { return; }
+
 		if (Address.IsEmpty() || Address == "None")
 		{
 			UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
@@ -79,6 +82,8 @@ void UOSCEmitterComponent::StopMidiEvent()
 	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if (osc)
 	{
+		if (!osc->GetIsTransmitterSocketActive()) { return; }
+
 		if (Address.IsEmpty() || Address == "None")
 		{
 			UE_LOG(LogTemp, Error, TEXT("OSC Emitter: Empty Adress."));
@@ -108,6 +113,7 @@ void UOSCEmitterComponent::InitialisePlayerController()
 void UOSCEmitterComponent::UpdatePanningData()
 {
 	if (PlayerController == nullptr) { return; }
+
 
 	//Get position info of listener
 	FVector listenerLocation, listenerFrontDir, listenerRightDir;
@@ -169,6 +175,8 @@ void UOSCEmitterComponent::TransmitPanningData(float angle)
 	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if (osc)
 	{
+		if (!osc->GetIsTransmitterSocketActive()) { return; }
+
 		float smoothedPanning = FMath::SmoothStep(0.0f, 1.0f, angle);
 		FString suffixPanning = "/panning";
 		FString address = Address + suffixPanning;
@@ -183,6 +191,7 @@ void UOSCEmitterComponent::TransmitAttenuationData(float attenuation)
 	UOSCSubsystem* osc = GetWorld()->GetSubsystem<UOSCSubsystem>();
 	if (osc)
 	{
+		if (!osc->GetIsTransmitterSocketActive()) { return; }
 		float smoothedAttenutation = FMath::SmoothStep(0.0f, 1.0f, attenuation);
 		FString suffixAttenuation = "/attenuation";
 		FString address = Address + suffixAttenuation;

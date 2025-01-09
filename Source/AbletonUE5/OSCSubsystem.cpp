@@ -57,7 +57,12 @@ void UOSCSubsystem::SendOSCFloat(double floatToSend, FString address)
 		UE_LOG(LogOSCSubsystem, Error, TEXT("OSCTransmitter is not valid"));
 		return;
 	}
-	OSCTransmitter->SendOSCFloat(floatToSend, address);
+	bool success = OSCTransmitter->SendOSCFloat(floatToSend, address);
+
+	if (!success)
+	{
+		UE_LOG(LogOSCSubsystem, Error, TEXT("Failed to send OSC Float"));
+	}
 	
 }
 
@@ -68,7 +73,11 @@ void UOSCSubsystem::SendOSCInt(int32 intToSend, FString address)
 		UE_LOG(LogOSCSubsystem, Error, TEXT("OSCTransmitter is not valid"));
 		return;
 	}
-	OSCTransmitter->SendOSCInt(intToSend, address);
+	bool success = OSCTransmitter->SendOSCInt(intToSend, address);
+	if (!success)
+	{
+		UE_LOG(LogOSCSubsystem, Error, TEXT("Failed to send OSC Int"));
+	}
 	
 }
 
@@ -79,7 +88,12 @@ void UOSCSubsystem::SendOSCMidiValue(int32 pitch, int32 velocity, FString addres
 		UE_LOG(LogOSCSubsystem, Error, TEXT("OSCTransmitter is not valid"));
 		return;
 	}
-	OSCTransmitter->SendOSCMidiValue(pitch, velocity, address);
+	bool success = OSCTransmitter->SendOSCMidiValue(pitch, velocity, address);
+	if (!success)
+	{
+		UE_LOG(LogOSCSubsystem, Error, TEXT("Failed to send OSC Midi Value"));
+	}
+
 
 }
 
@@ -90,8 +104,17 @@ void UOSCSubsystem::SendOSCMidiNote(EMidiNote note, int32 velocity, FString addr
 		UE_LOG(LogOSCSubsystem, Error, TEXT("OSCTransmitter is not valid"));
 		return;
 	}
-	OSCTransmitter->SendOSCMidiNote(note, velocity, address);
+	bool success = OSCTransmitter->SendOSCMidiNote(note, velocity, address);
+	if (!success)
+	{
+		UE_LOG(LogOSCSubsystem, Error, TEXT("Failed to send OSC Midi Note"));
+	}
 	
+}
+
+bool UOSCSubsystem::GetIsTransmitterSocketActive()
+{
+	return OSCTransmitter->GetIsSocketActive();
 }
 
 

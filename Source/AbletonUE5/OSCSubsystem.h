@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SendOSCMidiNote(EMidiNote note, int32 velocity, FString address);
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsTransmitterSocketActive();
+
 private:
 	AOSCTransmitter* OSCTransmitter;
 };

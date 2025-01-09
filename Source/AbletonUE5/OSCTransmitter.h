@@ -20,10 +20,11 @@ public:
 	// Sets default values for this actor's properties
 	AOSCTransmitter();
 
-	void SendOSCFloat(double floatToSend, FString address);
-	void SendOSCInt(int32 intToSend, FString address);
-	void SendOSCMidiValue(int32 pitch, int32 velocity, FString address);
-	void SendOSCMidiNote(EMidiNote note, int32 velocity, FString address);
+	bool SendOSCFloat(double floatToSend, FString address);
+	bool SendOSCInt(int32 intToSend, FString address);
+	bool SendOSCMidiValue(int32 pitch, int32 velocity, FString address);
+	bool SendOSCMidiNote(EMidiNote note, int32 velocity, FString address);
+	bool GetIsSocketActive();
 
 protected:
 	// Called when the game starts or when spawned

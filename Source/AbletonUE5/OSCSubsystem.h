@@ -6,6 +6,7 @@
 #include "Logging/LogCategory.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "AbletonUE5Enums.h"
+#include "OSCTransmitter.h"
 
 #include "OSCSubsystem.generated.h"
 
@@ -44,5 +45,5 @@ public:
 	void SendOSCMidiNote(EMidiNote note, int32 velocity, FString address);
 
 private:
-	UOSCClient* OSCClient;
+	AOSCTransmitter* OSCTransmitter;
 };

@@ -36,7 +36,7 @@ void AOSCProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Projectile with OSC Address %s"), *OSCEmitterComponent->Address);
-	OSCEmitterComponent->PlayMidiEvent(EMidiNote::C5, 127, 1.0f);
+	//OSCEmitterComponent->PlayMidiEvent(EMidiNote::C5, 127, 1.0f);
 	
 }
 
@@ -56,7 +56,9 @@ void AOSCProjectile::PlaySound(EProjectileSound SoundType)
 	//Avoid bounce spam
 	if (midiVelocity < 10.0 && SoundType == EProjectileSound::Bounce) { return; }
 
-	EMidiNote noteToPlay = Sounds[SoundType];
+	int random = FMath::RandRange(36, 72);
+
+	EMidiNote noteToPlay = static_cast<EMidiNote>(random);
 	OSCEmitterComponent->PlayMidiEvent(noteToPlay, midiVelocity, 0.5f);
 
 }
